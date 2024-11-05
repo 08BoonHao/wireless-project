@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us</title>
+    <!-- Include Socket.IO client library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.1/socket.io.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+        }
+
+        h1 {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 24px;
+        }
+
+        h2 {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px auto;
+            max-width: 800px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            background-color: #fff;
+        }
+
+        th,
+        td {
+            border: 1px solid #ccc;
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #007bff;
+            color: #fff;
+            text-align: center;
+            /* Center the table titles */
+        }
+
+        ul#responseList {
+            list-style: none;
+            padding: 0;
+        }
+
+        ul#responseList li {
+            background-color: #fff;
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+        }
+
+        /* Center the table */
+        table {
+            margin: 20px auto;
+            max-width: 800px;
+        }
+
+        /* Style the table header */
+        th {
+            background-color: #007bff;
+            color: #fff;
+            text-align: center;
+            /* Center the table titles */
+        }
+
+        /* Style the table cells */
+        td {
+            border: 1px solid #ccc;
+            padding: 10px;
+            text-align: left;
+        }
+
+        /* Adjust column widths */
+        td:nth-child(3),
+        /* Question/Feedback column */
+        td:nth-child(4),
+        /* Email column */
+        td:nth-child(5)
+
+        /* Contact Number column */
+            {
+            max-width: 400px;
+            /* Adjust the maximum width as needed */
+            word-wrap: break-word;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Contact Us</h1>
+
+    <h2>Contact Form Responses:</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Date & Time</th>
+                <th>Name</th>
+                <th>Question/Feedback</th>
+                <th>Email</th>
+                <th>Contact Number</th>
+            </tr>
+        </thead>
+        <tbody id="responseTableBody"></tbody>
+    </table>
+
+    <script>
+        const socket = io.connect('http://' + document.domain + ':' + location.port + '/chat');
+
+        socket.on('connect', function () {
+            // Emit a connected message to the server to let it know the web client is connected.
+            socket.emit('web_client_connected', { connected: true });
+            console.log('Connected to WebSocket server');
+        });
+
+        socket.on('contact_us_response', function (data) {
+            console.log('Response received from server');
+            let response = JSON.parse(data);
+            let responseTableBody = document.getElementById('responseTableBody');
+
+            // Create a new table row
+            let newRow = responseTableBody.insertRow(0);
+
+            // Add cells to the new row
+            let dateCell = newRow.insertCell(0);
+            let nameCell = newRow.insertCell(1);
+            let questionCell = newRow.insertCell(2);
+            let emailCell = newRow.insertCell(3);
+            let contactNumberCell = newRow.insertCell(4);
+
+            // Populate cells with response data
+            dateCell.textContent = response.timestamp;
+            nameCell.textContent = response.name;
+            questionCell.textContent = response.question;
+            emailCell.textContent = response.email;
+            contactNumberCell.textContent = response.contactNumber;
+        });
+    </script>
+</body>
+
+</html>
